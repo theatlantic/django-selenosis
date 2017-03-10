@@ -13,7 +13,6 @@ class ActionSelenium(argparse.Action):
     Validate the comma-separated list of requested browsers.
     """
     def __call__(self, parser, namespace, values, option_string=None):
-        print("self.dest = %s" % self.dest)
         browsers = values.split(',')
         for browser in browsers:
             try:

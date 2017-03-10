@@ -18,6 +18,7 @@ except pkg_resources.DistributionNotFound:
 all_by_module = {
     'django_admin_testutils.selenium': ['SeleniumTestCase', 'SeleniumTestCaseBase'],
     'django_admin_testutils.runner': ['DiscoverRunner'],
+    'django_admin_testutils.runtests': ['RunTests'],
     'django_admin_testutils.testcases': [
         'AdminSeleniumTestCase', 'AdminSeleniumTestCaseBase'],
 }

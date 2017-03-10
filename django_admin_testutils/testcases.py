@@ -268,7 +268,8 @@ class AdminSeleniumTestCase(six.with_metaclass(
 
     def save_form(self):
         has_continue = bool(
-            self.selenium.execute_script('return $("[name=_continue]").length'))
+            self.selenium.execute_script(
+                'return django.jQuery("[name=_continue]").length'))
         name_attr = "_continue" if has_continue else "_save"
         self.selenium.find_element_by_xpath('//*[@name="%s"]' % name_attr).click()
         if has_continue:
@@ -285,10 +286,12 @@ class AdminSeleniumTestCase(six.with_metaclass(
         if not self.has_grappelli:
             return
         self.selenium.execute_script(
+            "(function($) {"
             "$('footer').attr('class', 'grp-module grp-submit-row');"
             "$('#content-inner').css('bottom', '0');"
             "$('#grp-header').css('position', 'static');"
-            "$('#grp-content').css('top', '0');")
+            "$('#grp-content').css('top', '0');"
+            "})(django.jQuery);")
 
 
 def expected_failure_if_grappelli(f):
