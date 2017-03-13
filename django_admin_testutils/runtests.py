@@ -18,6 +18,12 @@ class RunTests(object):
             argv = sys.argv[1:]
 
         warnings.filterwarnings('ignore', module="IPython", category=DeprecationWarning)
+        warnings.filterwarnings("ignore", module="distutils")
+        try:
+            warnings.filterwarnings("ignore", category=ResourceWarning)
+        except NameError:
+            pass
+        warnings.filterwarnings("ignore", "invalid escape sequence", DeprecationWarning)
 
         parser = CommandParser(
             None, usage="%(prog)s [options] [args]", add_help=False)
