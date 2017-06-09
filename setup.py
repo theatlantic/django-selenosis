@@ -17,7 +17,7 @@ def read(*parts):
 
 setup(
     name='django-admin-testutils',
-    version='0.9.0.dev1',
+    version='0.9.0',
     license='BSD',
     description='Helpers for writing selenium tests for the django admin',
     long_description=read('README.rst'),
