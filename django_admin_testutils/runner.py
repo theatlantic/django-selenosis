@@ -1,9 +1,14 @@
 import argparse
 import logging
 import unittest
+import optparse
 
-import django.test.runner
 from django.utils import six
+
+try:
+    from django.test.runner import DiscoverRunner as _DiscoverRunner
+except ImportError:
+    from discover_runner import DiscoverRunner as _DiscoverRunner
 
 from django_admin_testutils.selenium import SeleniumTestCaseBase
 
@@ -43,20 +48,55 @@ class TextTestResult(NoFailFastUnexpectedSuccessTestResultMixin, unittest.TextTe
     pass
 
 
-class DebugSQLTextTestResult(
-        NoFailFastUnexpectedSuccessTestResultMixin,
-        django.test.runner.DebugSQLTextTestResult):
+try:
+    from django.test.runner import DebugSQLTextTestResult as _DebugSQLTextTestResult
+except ImportError:
+    DebugSQLTextTestResult = TextTestResult
+else:
+    class DebugSQLTextTestResult(
+            NoFailFastUnexpectedSuccessTestResultMixin,
+            _DebugSQLTextTestResult):
 
-    def addUnexpectedSuccess(self, test):
-        super(DebugSQLTextTestResult, self).addUnexpectedSuccess(test)
-        self.debug_sql_stream.seek(0)
-        self.unexpectedSuccesses[-1] += (self.debug_sql_stream.read(),)
+        def addUnexpectedSuccess(self, test):
+            super(DebugSQLTextTestResult, self).addUnexpectedSuccess(test)
+            self.debug_sql_stream.seek(0)
+            self.unexpectedSuccesses[-1] += (self.debug_sql_stream.read(),)
 
 
-class DiscoverRunner(django.test.runner.DiscoverRunner):
+def selenium_callback(option, opt, value, parser):
+    browsers = value.split(',')
+    for browser in browsers:
+        try:
+            SeleniumTestCaseBase.import_webdriver(browser)
+        except ImportError:
+            raise optparse.OptionValueError(
+                "Selenium browser specification '%s' is not valid." % browser)
+
+    setattr(parser.values, option.dest, browsers)
+
+
+class DiscoverRunner(_DiscoverRunner):
     """Overridden DiscoverRunner that doesn't failfast on unexpected success"""
 
     default_log_by_verbosity = False
+
+    if hasattr(_DiscoverRunner, 'option_list'):
+        option_list = _DiscoverRunner.option_list + (
+            optparse.make_option(
+                '--selenium', action="callback", metavar='BROWSERS',
+                dest='selenium',
+                callback=selenium_callback,
+                default=['phantomjs'],
+                type='string',
+                help='A comma-separated list of browsers to run the Selenium '
+                     'tests against. Defaults to "phantomjs".'),
+            optparse.make_option(
+                '--log-by-verbosity',
+                action='store_true',
+                default=False,
+                dest='log_by_verbosity',
+                help='Enable matching log levels to the verbosity flag'),
+        )
 
     def __init__(self, **kwargs):
         self.log_by_verbosity = kwargs.pop('log_by_verbosity')

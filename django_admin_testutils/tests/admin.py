@@ -16,9 +16,9 @@ class BookInline(admin.TabularInline):
     sortable_field_name = "position"
 
 
-@admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
     inlines = [BookInline]
 
 
+admin.site.register(Author, AuthorAdmin)
 admin.site.register(Publisher, admin.ModelAdmin)

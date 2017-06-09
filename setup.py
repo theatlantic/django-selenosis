@@ -17,7 +17,7 @@ def read(*parts):
 
 setup(
     name='django-admin-testutils',
-    version='1.0.1',
+    version='0.9.0.dev1',
     license='BSD',
     description='Helpers for writing selenium tests for the django admin',
     long_description=read('README.rst'),
@@ -30,12 +30,20 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Django>=1.8',
+        'Django>=1.4',
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
+        'Framework :: Django :: 1.4',
+        'Framework :: Django :: 1.5',
+        'Framework :: Django :: 1.6',
+        'Framework :: Django :: 1.7',
+        'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
+        'Framework :: Django :: 1.10',
+        'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',

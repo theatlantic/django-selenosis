@@ -4,6 +4,12 @@ import tempfile
 import django
 
 
+try:
+    import dj_database_url
+except ImportError:
+    dj_database_url = None
+
+
 current_dir = os.path.abspath(os.path.dirname(__file__))
 temp_dir = tempfile.mkdtemp()
 
@@ -15,7 +21,19 @@ DATABASES = {
         'NAME': ':memory:'
     }
 }
+
+if dj_database_url is not None:
+    DATABASES['default'] = dj_database_url.parse(
+        os.environ.get('DATABASE_URL', 'sqlite://:memory:'))
+
 SECRET_KEY = 'z-i*xqqn)r0i7leak^#clq6y5j8&tfslp^a4duaywj2$**s*0_'
+
+if django.VERSION > (2, 0):
+    MIGRATION_MODULES = {
+        'auth': None,
+        'contenttypes': None,
+        'sessions': None,
+    }
 
 try:
     import grappelli  # noqa
@@ -48,6 +66,25 @@ TEMPLATES = [{
         ],
     },
 }]
+
+if django.VERSION < (1, 8):
+    TEMPLATE_LOADERS = (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        'django.contrib.auth.context_processors.auth',
+        'django.core.context_processors.debug',
+        'django.core.context_processors.i18n',
+        'django.core.context_processors.media',
+        'django.core.context_processors.static',
+        'django.core.context_processors.tz',
+        'django.core.context_processors.request',
+        'django.contrib.messages.context_processors.messages',
+    )
+    TEMPLATE_DIRS = (
+        os.path.join(current_dir, 'templates'),
+    )
 
 if 'suit' in INSTALLED_APPS:
     # django-suit has issues with string_if_invalid,
@@ -82,8 +119,11 @@ else:
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
-        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     )
+
+    if django.VERSION > (1, 7):
+        MIDDLEWARE_CLASSES += (
+            'django.contrib.auth.middleware.SessionAuthenticationMiddleware', )
 
 LOGGING = {
     'version': 1,

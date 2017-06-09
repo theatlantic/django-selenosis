@@ -6,8 +6,10 @@ import re
 from unittest import expectedFailure, SkipTest
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+try:
+    from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+except ImportError:
+    from django.test import LiveServerTestCase as StaticLiveServerTestCase
 from django.db.models import Model
 try:
     # Django 1.10
@@ -19,14 +21,22 @@ from django.test.utils import override_settings
 from django.utils import six
 from django.utils.six.moves.urllib.parse import urlparse
 
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:
+    from django.contrib.auth.models import User
+    get_user_model = lambda: User
+
 from .selenium import SeleniumTestCaseBase, SeleniumTestCase
 
 
 class AdminSeleniumTestCaseBase(SeleniumTestCaseBase):
 
     def __new__(cls, name, bases, attrs):
-        new_cls = super(AdminSeleniumTestCaseBase, cls).__new__(cls, name, bases, attrs)
+        return super(AdminSeleniumTestCaseBase, cls).__new__(cls, name, bases, attrs)
         root_urlconf = getattr(new_cls, 'root_urlconf', 'django_admin_testutils.urls')
+        if root_urlconf == 'django_admin_testutils.urls':
+            import ipdb; ipdb.set_trace()
         return override_settings(ROOT_URLCONF=root_urlconf)(new_cls)
 
 
@@ -256,12 +266,15 @@ class AdminSeleniumTestCase(six.with_metaclass(
             pk = obj.pk
 
         info = (opts.app_label, opts.object_name.lower())
-        if pk:
-            url = reverse(
-                'admin:%s_%s_change' % info, args=[pk],
-                current_app=self.admin_site_name)
-        else:
-            url = reverse('admin:%s_%s_add' % info, current_app=self.admin_site_name)
+        try:
+            if pk:
+                url = reverse(
+                    'admin:%s_%s_change' % info, args=[pk],
+                    current_app=self.admin_site_name)
+            else:
+                url = reverse('admin:%s_%s_add' % info, current_app=self.admin_site_name)
+        except:
+            import ipdb; ipdb.set_trace()
         self.selenium.get('%s%s' % (self.live_server_url, url))
         self.wait_page_loaded()
         self.initialize_page()

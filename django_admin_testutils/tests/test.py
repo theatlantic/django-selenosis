@@ -29,7 +29,7 @@ class TestUtilsTestCase(AdminSeleniumTestCase):
             el.clear()
             el.send_keys('Mason and Dixon')
         self.save_form()
-        self.mason_and_dixon.refresh_from_db()
+        self.mason_and_dixon = Book.objects.get(pk=self.mason_and_dixon.pk)
         self.assertEqual(self.mason_and_dixon.name, "Mason and Dixon")
 
     def test_clickable_selector(self):
