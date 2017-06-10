@@ -74,6 +74,12 @@ class RunTests(object):
             options.testrunner = 'django_admin_testutils.DiscoverRunner'
             options.args = remaining_args
             remaining_args = []
+            if not options.interactive:
+                remaining_args.append("--noinput")
+            if options.failfast:
+                remaining_args.append("--failfast")
+            if options.liveserver:
+                remaining_args.append("--liveserver=%s" % options.liveserver)
 
         handle_default_options(options)
         test_labels = options.args or [self.default_test_label]
