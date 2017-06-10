@@ -99,6 +99,10 @@ class RunTests(object):
                 # Ignore warning with grappelli and deprecated url templatetag
                 warnings.filterwarnings("ignore", "The syntax for the url", Warning)
 
+            if django.VERSION[:2] == (1, 7):
+                warnings.filterwarnings(
+                    "ignore", "The django.contrib.admin.util module", Warning)
+
         self.execute(flags, test_labels)
 
     def execute(self, flags, test_labels):
