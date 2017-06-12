@@ -20,7 +20,8 @@ all_by_module = {
     'django_admin_testutils.runner': ['DiscoverRunner'],
     'django_admin_testutils.runtests': ['RunTests'],
     'django_admin_testutils.testcases': [
-        'AdminSeleniumTestCase', 'AdminSeleniumTestCaseBase'],
+        'AdminSeleniumTestCase', 'AdminSeleniumTestCaseBase',
+        'SeleniumLiveServerTestCaseMixin', 'SeleniumLiveServerTestCase'],
 }
 
 # modules that should be imported when accessed as attributes of django_admin_testutils

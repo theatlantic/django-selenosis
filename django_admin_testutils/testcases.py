@@ -30,61 +30,13 @@ class AdminSeleniumTestCaseBase(SeleniumTestCaseBase):
         return override_settings(ROOT_URLCONF=root_urlconf)(new_cls)
 
 
-class AdminSeleniumTestCase(six.with_metaclass(
-        AdminSeleniumTestCaseBase, SeleniumTestCase, StaticLiveServerTestCase)):
-
+class SeleniumLiveServerTestCaseMixin(object):
     maxDiff = None
-
-    window_size = (1120, 1300)
+    longMessage = True
     page_load_timeout = 10
     default_timeout = 10
-    admin_site_name = 'admin'
 
-    @property
-    def has_grappelli(self):
-        return 'grappelli' in settings.INSTALLED_APPS
-
-    @property
-    def has_suit(self):
-        return 'suit' in settings.INSTALLED_APPS
-
-    @property
-    def available_apps(self):
-        apps = [
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.messages',
-            'django.contrib.sessions',
-            'django.contrib.sites',
-            'django.contrib.staticfiles',
-            'django.contrib.admin',
-            'django_admin_testutils',
-        ]
-        if self.has_grappelli:
-            apps.insert(0, 'grappelli')
-
-        current_app = type(self).__module__.rpartition('.')[0]
-
-        parent_app = re.split(r'\.tests(?:\.|$)', current_app)[0]
-        if parent_app != current_app:
-            apps.append(parent_app)
-
-        apps.append(current_app)
-
-    @classmethod
-    def setUpClass(cls):
-        super(AdminSeleniumTestCase, cls).setUpClass()
-        __import__(settings.ROOT_URLCONF)
-
-    def setUp(self):
-        super(AdminSeleniumTestCase, self).setUp()
-        self.selenium.set_window_size(*self.window_size)
-        self.selenium.set_page_load_timeout(self.page_load_timeout)
-        get_user_model().objects.create_superuser(
-            username='super', password='secret', email='super@example.com')
-        self.admin_login("super", "secret")
-
-    def tearDown(self):
+    def _post_teardown(self):
         # Close any popup windows that might have stuck around (for instance,
         # if an assertion failed or an exception occurred while a popup was
         # open)
@@ -96,6 +48,7 @@ class AdminSeleniumTestCase(six.with_metaclass(
             self.selenium.switch_to.window(popup_window)
             self.selenium.close()
             self.selenium.switch_to.window(self.selenium.window_handles[0])
+        super(SeleniumLiveServerTestCaseMixin, self)._post_teardown()
 
     def wait_for(self, css_selector, timeout=None):
         """
@@ -111,49 +64,6 @@ class AdminSeleniumTestCase(six.with_metaclass(
             ec.presence_of_element_located((By.CSS_SELECTOR, css_selector)),
             timeout)
 
-    def initialize_page(self):
-        self.selenium.set_window_size(*self.window_size)
-        self.selenium.set_page_load_timeout(self.page_load_timeout)
-        try:
-            self.selenium.execute_script("window.$ = django.jQuery")
-        except:
-            pass
-        else:
-            self.make_header_footer_position_static()
-
-    invalid_re = re.compile(r'(?<=INVALID {{ )((?:.(?!}}))*?) }}')
-
-    def wait_page_loaded(self):
-        """
-        Block until page has started to load.
-        """
-        from selenium.common.exceptions import TimeoutException
-        try:
-            # Wait for the next page to be loaded
-            self.wait_for('body')
-        except TimeoutException:
-            # IE7 occasionally returns an error "Internet Explorer cannot
-            # display the webpage" and doesn't load the next page. We just
-            # ignore it.
-            pass
-        else:
-            invalid_matches = self.invalid_re.findall(self.selenium.page_source)
-            self.assertEqual(invalid_matches, [])
-
-    def admin_login(self, username, password):
-        """
-        Helper function to log into the admin.
-        """
-        self.client.login(username=username, password=password)
-        self.selenium.get("%s%s" %
-            (self.live_server_url, '/static/admin_testutils/blank.html'))
-        self.wait_page_loaded()
-        domain = urlparse(self.live_server_url).netloc.split(':')[0]
-        cookie_dict = {'path': '/', 'domain': domain}
-        for k, v in self.client.cookies.items():
-            cookie = dict(cookie_dict, name=k, value=v.value)
-            self.selenium.add_cookie(cookie)
-
     def wait_until(self, callback, timeout=None, message=None):
         """
         Helper function that blocks the execution of the tests until the
@@ -167,6 +77,13 @@ class AdminSeleniumTestCase(six.with_metaclass(
             timeout = self.default_timeout
 
         WebDriverWait(self.selenium, timeout).until(callback, message)
+
+    def wait_page_loaded(self):
+        """
+        Block until page has started to load.
+        """
+        # Wait for the next page to be loaded
+        self.wait_for('body')
 
     def wait_until_visible_selector(self, selector, timeout=None):
         from selenium.webdriver.common.by import By
@@ -246,6 +163,111 @@ class AdminSeleniumTestCase(six.with_metaclass(
             raise
         finally:
             self.selenium.switch_to.window(self.selenium.window_handles[0])
+
+
+class SeleniumLiveServerTestCase(
+        SeleniumLiveServerTestCaseMixin, SeleniumTestCase):
+    pass
+
+
+class AdminSeleniumTestCase(six.with_metaclass(
+        AdminSeleniumTestCaseBase, SeleniumLiveServerTestCaseMixin,
+        SeleniumTestCase, StaticLiveServerTestCase)):
+
+    window_size = (1120, 1300)
+    page_load_timeout = 10
+    default_timeout = 10
+    admin_site_name = 'admin'
+
+    @property
+    def has_grappelli(self):
+        return 'grappelli' in settings.INSTALLED_APPS
+
+    @property
+    def has_suit(self):
+        return 'suit' in settings.INSTALLED_APPS
+
+    @property
+    def available_apps(self):
+        apps = [
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.messages',
+            'django.contrib.sessions',
+            'django.contrib.sites',
+            'django.contrib.staticfiles',
+            'django.contrib.admin',
+            'django_admin_testutils',
+        ]
+        if self.has_grappelli:
+            apps.insert(0, 'grappelli')
+
+        current_app = type(self).__module__.rpartition('.')[0]
+
+        parent_app = re.split(r'\.tests(?:\.|$)', current_app)[0]
+        if parent_app != current_app:
+            apps.append(parent_app)
+
+        apps.append(current_app)
+
+    @classmethod
+    def setUpClass(cls):
+        super(AdminSeleniumTestCase, cls).setUpClass()
+        __import__(settings.ROOT_URLCONF)
+
+    def setUp(self):
+        super(AdminSeleniumTestCase, self).setUp()
+        self.set_window_size()
+        self.selenium.set_page_load_timeout(self.page_load_timeout)
+        get_user_model().objects.create_superuser(
+            username='super', password='secret', email='super@example.com')
+        self.admin_login("super", "secret")
+
+    def set_window_size(self):
+        self.selenium.set_window_size(*self.window_size)
+
+    def initialize_page(self):
+        self.set_window_size()
+        self.selenium.set_page_load_timeout(self.page_load_timeout)
+        try:
+            self.selenium.execute_script("window.$ = django.jQuery")
+        except:
+            pass
+        else:
+            self.make_header_footer_position_static()
+
+    invalid_re = re.compile(r'(?<=INVALID {{ )((?:.(?!}}))*?) }}')
+
+    def wait_page_loaded(self):
+        """
+        Block until page has started to load.
+        """
+        from selenium.common.exceptions import TimeoutException
+        try:
+            # Wait for the next page to be loaded
+            super(AdminSeleniumTestCase, self).wait_page_loaded()
+        except TimeoutException:
+            # IE7 occasionally returns an error "Internet Explorer cannot
+            # display the webpage" and doesn't load the next page. We just
+            # ignore it.
+            pass
+        else:
+            invalid_matches = self.invalid_re.findall(self.selenium.page_source)
+            self.assertEqual(invalid_matches, [])
+
+    def admin_login(self, username, password):
+        """
+        Helper function to log into the admin.
+        """
+        self.client.login(username=username, password=password)
+        self.selenium.get("%s%s" %
+            (self.live_server_url, '/static/admin_testutils/blank.html'))
+        self.wait_page_loaded()
+        domain = urlparse(self.live_server_url).netloc.split(':')[0]
+        cookie_dict = {'path': '/', 'domain': domain}
+        for k, v in self.client.cookies.items():
+            cookie = dict(cookie_dict, name=k, value=v.value)
+            self.selenium.add_cookie(cookie)
 
     def load_admin(self, obj=None):
         if isinstance(obj, type) and issubclass(obj, Model):
