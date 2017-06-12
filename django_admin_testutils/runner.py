@@ -15,6 +15,8 @@ class ActionSelenium(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         browsers = values.split(',')
         for browser in browsers:
+            if browser.lower() in ("skip", "none"):
+                continue
             try:
                 SeleniumTestCaseBase.import_webdriver(browser)
             except ImportError:
@@ -62,8 +64,12 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
         self.log_by_verbosity = kwargs.pop('log_by_verbosity')
         browsers = kwargs.pop('selenium')
         if not browsers:
-            SeleniumTestCaseBase.import_webdriver('phantomjs')
-            browsers = ['phantomjs']
+            try:
+                SeleniumTestCaseBase.import_webdriver('phantomjs')
+            except:
+                browsers = ['skip']
+            else:
+                browsers = ['phantomjs']
         SeleniumTestCaseBase.browsers = browsers
         super(DiscoverRunner, self).__init__(**kwargs)
 

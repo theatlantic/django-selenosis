@@ -2,6 +2,7 @@ from __future__ import unicode_literals, absolute_import
 
 import sys
 import unittest
+from unittest import SkipTest
 
 from django.test import LiveServerTestCase
 from django.utils import six
@@ -49,17 +50,32 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
 
     @classmethod
     def import_webdriver(cls, browser):
-        return import_string("selenium.webdriver.%s.webdriver.WebDriver" % browser)
+        if "." in browser:
+            browser_import = browser
+        elif browser.lower() in ('none', 'skip'):
+            return
+        else:
+            browser_import = "selenium.webdriver.%s.webdriver.WebDriver" % browser
+        return import_string(browser_import)
 
-    def create_webdriver(self):
-        return self.import_webdriver(self.browser)()
+    def create_webdriver(self, *args, **kwargs):
+        webdriver_cls = self.import_webdriver(self.browser)
+        if webdriver_cls:
+            return webdriver_cls(*args, **kwargs)
 
 
 class SeleniumTestCase(six.with_metaclass(SeleniumTestCaseBase, LiveServerTestCase)):
 
     @classmethod
     def setUpClass(cls):
-        cls.selenium = cls.create_webdriver()
+        try:
+            selenium = cls.create_webdriver()
+        except Exception as e:
+            exc = SkipTest("%s" % e)
+            six.reraise(SkipTest, exc, sys.exc_info()[2])
+        if not selenium:
+            raise SkipTest("Selenium configured incorrectly")
+        cls.selenium = selenium
         cls.selenium.implicitly_wait(10)
         super(SeleniumTestCase, cls).setUpClass()
 
