@@ -48,8 +48,8 @@ class RunTests(object):
             warnings.filterwarnings(
                 "ignore", "__class__ not set defining", DeprecationWarning)
 
-        # Ignore a deprecation warning in distutils.spawn for python 3.4
-        if sys.version_info[:2] == (3, 4):
+        # Ignore a deprecation warning in distutils.spawn for python 3.4+
+        if sys.version_info > (3, 4):
             warnings.filterwarnings("ignore", "the imp module", Warning)
 
         from django.conf import settings
