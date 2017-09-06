@@ -22,6 +22,7 @@ all_by_module = {
     'django_admin_testutils.testcases': [
         'AdminSeleniumTestCase', 'AdminSeleniumTestCaseBase',
         'SeleniumLiveServerTestCaseMixin', 'SeleniumLiveServerTestCase'],
+    'django_admin_testutils.utils': ['tag'],
 }
 
 # modules that should be imported when accessed as attributes of django_admin_testutils

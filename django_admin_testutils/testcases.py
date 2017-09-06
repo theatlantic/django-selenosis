@@ -20,6 +20,7 @@ from django.utils import six
 from django.utils.six.moves.urllib.parse import urlparse
 
 from .selenium import SeleniumTestCaseBase, SeleniumTestCase
+from .utils import tag
 
 
 class AdminSeleniumTestCaseBase(SeleniumTestCaseBase):
@@ -30,6 +31,7 @@ class AdminSeleniumTestCaseBase(SeleniumTestCaseBase):
         return override_settings(ROOT_URLCONF=root_urlconf)(new_cls)
 
 
+@tag('selenium')
 class SeleniumLiveServerTestCaseMixin(object):
     maxDiff = None
     longMessage = True
