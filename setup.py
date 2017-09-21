@@ -16,12 +16,12 @@ def read(*parts):
 
 
 setup(
-    name='django-admin-testutils',
+    name='django-selenosis',
     version='1.0.8',
     license='BSD',
-    description='Helpers for writing selenium tests for the django admin',
+    description='Helpers for writing selenium tests for Django',
     long_description=read('README.rst'),
-    url='https://github.com/theatlantic/django-admin-testutils',
+    url='https://github.com/theatlantic/django-selenosis',
     author='Frankie Dintino',
     author_email='fdintino@theatlantic.com',
     maintainer='Frankie Dintino',

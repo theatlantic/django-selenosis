@@ -1,12 +1,12 @@
-from django_admin_testutils import AdminSeleniumTestCase
+from selenosis import AdminSelenosisTestCase
 
 from .models import Publisher, Book, Author
 
 
-class TestUtilsTestCase(AdminSeleniumTestCase):
+class TestSelenosisTestCase(AdminSelenosisTestCase):
 
     def setUp(self):
-        super(TestUtilsTestCase, self).setUp()
+        super(TestSelenosisTestCase, self).setUp()
         self.author = Author.objects.create(name="Thomas Pynchon")
         self.against_the_day = Book.objects.create(
             position=0,

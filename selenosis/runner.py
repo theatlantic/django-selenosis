@@ -5,14 +5,14 @@ import unittest
 import django.test.runner
 from django.utils import six
 
-from django_admin_testutils.selenium import SeleniumTestCaseBase
+from selenosis.selenium import SelenosisTestCaseBase
 
 
 #: Whether Django has support for tag decorators (true for Django >= 1.10)
 DJANGO_NATIVE_TAG_SUPPORT = hasattr(django.test.runner, 'filter_tests_by_tags')
 
 
-class ActionSelenium(argparse.Action):
+class ActionSelenosis(argparse.Action):
     """
     Validate the comma-separated list of requested browsers.
     """
@@ -25,10 +25,10 @@ class ActionSelenium(argparse.Action):
             if browser.lower() in ("skip", "none"):
                 continue
             try:
-                SeleniumTestCaseBase.import_webdriver(browser)
+                SelenosisTestCaseBase.import_webdriver(browser)
             except ImportError:
                 raise argparse.ArgumentError(
-                    self, "Selenium browser specification '%s' is not valid." % browser)
+                    self, "Selenosis browser specification '%s' is not valid." % browser)
         setattr(namespace, self.dest, browsers)
 
 
@@ -72,12 +72,12 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
         browsers = kwargs.pop('selenium')
         if not browsers:
             try:
-                SeleniumTestCaseBase.import_webdriver('phantomjs')
+                SelenosisTestCaseBase.import_webdriver('phantomjs')
             except:
                 browsers = ['skip']
             else:
                 browsers = ['phantomjs']
-        SeleniumTestCaseBase.browsers = browsers
+        SelenosisTestCaseBase.browsers = browsers
         if not DJANGO_NATIVE_TAG_SUPPORT:
             self.tags = set(kwargs.pop('tags', None) or [])
             self.exclude_tags = set(kwargs.pop('exclude_tags', None) or [])
@@ -94,8 +94,8 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
     def add_arguments(cls, parser):
         super(DiscoverRunner, cls).add_arguments(parser)
         parser.add_argument(
-            '--selenium', action=ActionSelenium, metavar='BROWSERS',
-            help='A comma-separated list of browsers to run the Selenium '
+            '--selenium', action=ActionSelenosis, metavar='BROWSERS',
+            help='A comma-separated list of browsers to run the Selenosis '
                  'tests against. Defaults to "phantomjs".')
         parser.add_argument(
             '--%slog-by-verbosity' % ('no-' if cls.default_log_by_verbosity else ''),

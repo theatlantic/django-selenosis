@@ -44,7 +44,7 @@ class RunTests(object):
         parser.add_argument('--pythonpath')
         parser.add_argument(
             '--testrunner', action='store',
-            default='django_admin_testutils.DiscoverRunner')
+            default='selenosis.DiscoverRunner')
         parser.add_argument('args', nargs='*')
 
         options, remaining_args = parser.parse_known_args(argv)

@@ -19,20 +19,20 @@ from django.test.utils import override_settings
 from django.utils import six
 from django.utils.six.moves.urllib.parse import urlparse
 
-from .selenium import SeleniumTestCaseBase, SeleniumTestCase
+from .selenium import SelenosisTestCaseBase, SelenosisTestCase
 from .utils import tag
 
 
-class AdminSeleniumTestCaseBase(SeleniumTestCaseBase):
+class AdminSelenosisTestCaseBase(SelenosisTestCaseBase):
 
     def __new__(cls, name, bases, attrs):
-        new_cls = super(AdminSeleniumTestCaseBase, cls).__new__(cls, name, bases, attrs)
-        root_urlconf = getattr(new_cls, 'root_urlconf', 'django_admin_testutils.urls')
+        new_cls = super(AdminSelenosisTestCaseBase, cls).__new__(cls, name, bases, attrs)
+        root_urlconf = getattr(new_cls, 'root_urlconf', 'selenosis.urls')
         return override_settings(ROOT_URLCONF=root_urlconf)(new_cls)
 
 
 @tag('selenium')
-class SeleniumLiveServerTestCaseMixin(object):
+class SelenosisLiveServerTestCaseMixin(object):
     maxDiff = None
     longMessage = True
     page_load_timeout = 10
@@ -50,7 +50,7 @@ class SeleniumLiveServerTestCaseMixin(object):
             self.selenium.switch_to.window(popup_window)
             self.selenium.close()
             self.selenium.switch_to.window(self.selenium.window_handles[0])
-        super(SeleniumLiveServerTestCaseMixin, self)._post_teardown()
+        super(SelenosisLiveServerTestCaseMixin, self)._post_teardown()
 
     def wait_for(self, css_selector, timeout=None):
         """
@@ -167,14 +167,14 @@ class SeleniumLiveServerTestCaseMixin(object):
             self.selenium.switch_to.window(self.selenium.window_handles[0])
 
 
-class SeleniumLiveServerTestCase(
-        SeleniumLiveServerTestCaseMixin, SeleniumTestCase):
+class SelenosisLiveServerTestCase(
+        SelenosisLiveServerTestCaseMixin, SelenosisTestCase):
     pass
 
 
-class AdminSeleniumTestCase(six.with_metaclass(
-        AdminSeleniumTestCaseBase, SeleniumLiveServerTestCaseMixin,
-        SeleniumTestCase, StaticLiveServerTestCase)):
+class AdminSelenosisTestCase(six.with_metaclass(
+        AdminSelenosisTestCaseBase, SelenosisLiveServerTestCaseMixin,
+        SelenosisTestCase, StaticLiveServerTestCase)):
 
     window_size = (1120, 1300)
     page_load_timeout = 10
@@ -199,7 +199,7 @@ class AdminSeleniumTestCase(six.with_metaclass(
             'django.contrib.sites',
             'django.contrib.staticfiles',
             'django.contrib.admin',
-            'django_admin_testutils',
+            'selenosis',
         ]
         if self.has_grappelli:
             apps.insert(0, 'grappelli')
@@ -214,11 +214,11 @@ class AdminSeleniumTestCase(six.with_metaclass(
 
     @classmethod
     def setUpClass(cls):
-        super(AdminSeleniumTestCase, cls).setUpClass()
+        super(AdminSelenosisTestCase, cls).setUpClass()
         __import__(settings.ROOT_URLCONF)
 
     def setUp(self):
-        super(AdminSeleniumTestCase, self).setUp()
+        super(AdminSelenosisTestCase, self).setUp()
         self.set_window_size()
         self.selenium.set_page_load_timeout(self.page_load_timeout)
         get_user_model().objects.create_superuser(
@@ -247,7 +247,7 @@ class AdminSeleniumTestCase(six.with_metaclass(
         from selenium.common.exceptions import TimeoutException
         try:
             # Wait for the next page to be loaded
-            super(AdminSeleniumTestCase, self).wait_page_loaded()
+            super(AdminSelenosisTestCase, self).wait_page_loaded()
         except TimeoutException:
             # IE7 occasionally returns an error "Internet Explorer cannot
             # display the webpage" and doesn't load the next page. We just
@@ -263,7 +263,7 @@ class AdminSeleniumTestCase(six.with_metaclass(
         """
         self.client.login(username=username, password=password)
         self.selenium.get("%s%s" %
-            (self.live_server_url, '/static/admin_testutils/blank.html'))
+            (self.live_server_url, '/static/selenosis/blank.html'))
         self.wait_page_loaded()
         domain = urlparse(self.live_server_url).netloc.split(':')[0]
         cookie_dict = {'path': '/', 'domain': domain}

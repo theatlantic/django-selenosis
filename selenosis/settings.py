@@ -63,7 +63,7 @@ INSTALLED_APPS += (
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django_admin_testutils',
+    'selenosis',
 )
 
 
@@ -94,7 +94,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django_admin_testutils': {
+        'selenosis': {
             'handlers': ['console'],
             'level': 'WARNING',
         },
@@ -102,9 +102,9 @@ LOGGING = {
 }
 
 SITE_ID = 1
-ROOT_URLCONF = 'django_admin_testutils.urls'
+ROOT_URLCONF = 'selenosis.urls'
 MEDIA_ROOT = os.path.join(temp_dir, 'media')
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 DEBUG_PROPAGATE_EXCEPTIONS = True
-TEST_RUNNER = 'django_admin_testutils.runner.DiscoverRunner'
+TEST_RUNNER = 'selenosis.runner.DiscoverRunner'

@@ -11,7 +11,7 @@ from django.utils.module_loading import import_string
 from django.utils.text import capfirst
 
 
-class SeleniumTestCaseBase(type(LiveServerTestCase)):
+class SelenosisTestCaseBase(type(LiveServerTestCase)):
     # List of browsers to dynamically create test classes for.
     browsers = []
     # Sentinel value to differentiate browser-specific instances.
@@ -22,7 +22,7 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
         Dynamically create new classes and add them to the test module when
         multiple browsers specs are provided (e.g. --selenium=firefox,chrome).
         """
-        test_class = super(SeleniumTestCaseBase, cls).__new__(cls, name, bases, attrs)
+        test_class = super(SelenosisTestCaseBase, cls).__new__(cls, name, bases, attrs)
         # If the test class is either browser-specific or a test base, return it.
         is_test_attr = lambda n: n.startswith('test') and callable(getattr(test_class, n))
         if test_class.browser or not any(is_test_attr(name) for name in dir(test_class)):
@@ -91,7 +91,7 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
             return webdriver_cls(*args, **kwargs)
 
 
-class SeleniumTestCase(six.with_metaclass(SeleniumTestCaseBase, LiveServerTestCase)):
+class SelenosisTestCase(six.with_metaclass(SelenosisTestCaseBase, LiveServerTestCase)):
 
     @classmethod
     def setUpClass(cls):
@@ -101,10 +101,10 @@ class SeleniumTestCase(six.with_metaclass(SeleniumTestCaseBase, LiveServerTestCa
             exc = SkipTest("%s" % e)
             six.reraise(SkipTest, exc, sys.exc_info()[2])
         if not selenium:
-            raise SkipTest("Selenium configured incorrectly")
+            raise SkipTest("Selenosis configured incorrectly")
         cls.selenium = selenium
         cls.selenium.implicitly_wait(10)
-        super(SeleniumTestCase, cls).setUpClass()
+        super(SelenosisTestCase, cls).setUpClass()
 
     @classmethod
     def _tearDownClassInternal(cls):
@@ -113,4 +113,4 @@ class SeleniumTestCase(six.with_metaclass(SeleniumTestCaseBase, LiveServerTestCa
         # kept a connection alive.
         if hasattr(cls, 'selenium'):
             cls.selenium.quit()
-        super(SeleniumTestCase, cls)._tearDownClassInternal()
+        super(SelenosisTestCase, cls)._tearDownClassInternal()

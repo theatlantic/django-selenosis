@@ -1,7 +1,7 @@
 # All this craziness is so that we can allow the classes in
-# django_admin_testutils.runner to be importable directly from this module, e.g.:
+# selenosis.runner to be importable directly from this module, e.g.:
 #
-#     from django_admin_testutils import DiscoverRunner
+#     from selenosis import DiscoverRunner
 #
 # without running afoul of the strict import order required by Django 1.9+.
 # This implementation is shamelessly stolen from werkzeug's ``__init__.py``.
@@ -10,22 +10,22 @@ import sys
 from types import ModuleType
 
 try:
-    __version__ = pkg_resources.get_distribution('django-admin-testutils').version
+    __version__ = pkg_resources.get_distribution('django-selenosis').version
 except pkg_resources.DistributionNotFound:
     __version__ = None
 
 # import mapping to objects in other modules
 all_by_module = {
-    'django_admin_testutils.selenium': ['SeleniumTestCase', 'SeleniumTestCaseBase'],
-    'django_admin_testutils.runner': ['DiscoverRunner'],
-    'django_admin_testutils.runtests': ['RunTests'],
-    'django_admin_testutils.testcases': [
-        'AdminSeleniumTestCase', 'AdminSeleniumTestCaseBase',
-        'SeleniumLiveServerTestCaseMixin', 'SeleniumLiveServerTestCase'],
-    'django_admin_testutils.utils': ['tag'],
+    'selenosis.selenium': ['SelenosisTestCase', 'SelenosisTestCaseBase'],
+    'selenosis.runner': ['DiscoverRunner'],
+    'selenosis.runtests': ['RunTests'],
+    'selenosis.testcases': [
+        'AdminSelenosisTestCase', 'AdminSelenosisTestCaseBase',
+        'SelenosisLiveServerTestCaseMixin', 'SelenosisLiveServerTestCase'],
+    'selenosis.utils': ['tag'],
 }
 
-# modules that should be imported when accessed as attributes of django_admin_testutils
+# modules that should be imported when accessed as attributes of selenosis
 attribute_modules = frozenset(['settings', 'urls'])
 
 object_origins = {}
@@ -49,7 +49,7 @@ class module(ModuleType):
                 setattr(self, extra_name, getattr(module, extra_name))
             return getattr(module, name)
         elif name in attribute_modules:
-            __import__('django_admin_testutils.' + name)
+            __import__('selenosis.' + name)
         return ModuleType.__getattribute__(self, name)
 
 
@@ -63,7 +63,7 @@ new_module.__dict__.update({
     '__doc__': __doc__,
     '__file__': __file__,
     '__path__': __path__,
-    '__package__': 'django_admin_testutils',
+    '__package__': 'selenosis',
     '__version__': __version__,
     '__docformat__': 'restructuredtext en',
 })

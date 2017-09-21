@@ -1,4 +1,4 @@
 include LICENSE
 include README.rst
-recursive-include django_admin_testutils/static *
-recursive-include django_admin_testutils/templates *
+recursive-include selenosis/static *
+recursive-include selenosis/templates *

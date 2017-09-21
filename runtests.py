@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import warnings
-import django_admin_testutils
+import selenosis
 
 
 def main():
     warnings.simplefilter("error", Warning)
-    runtests = django_admin_testutils.RunTests(
-        "django_admin_testutils.tests.settings", "django_admin_testutils")
+    runtests = selenosis.RunTests(
+        "selenosis.tests.settings", "selenosis")
     runtests()
 
 
