@@ -19,6 +19,9 @@ class ActionSelenium(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         browsers = values.split(',')
         for browser in browsers:
+            if browser.lower() == 'chrome-headless':
+                browser = 'chrome'
+            browser = browser.partition('+')[0]
             if browser.lower() in ("skip", "none"):
                 continue
             try:

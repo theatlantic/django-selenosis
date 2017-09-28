@@ -59,7 +59,24 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
         return import_string(browser_import)
 
     def create_webdriver(self, *args, **kwargs):
-        webdriver_cls = self.import_webdriver(self.browser)
+        from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+        browser, _, url = self.browser.partition('+')
+        if url:
+            kwargs.update({
+                'desired_capabilities': getattr(DesiredCapabilities, browser.upper()),
+                'command_executor': url,
+            })
+            browser = 'remote'
+        elif browser == 'chrome-headless':
+            from selenium.webdriver import ChromeOptions
+
+            browser = 'chrome'
+            options = ChromeOptions()
+            options.add_argument('headless')
+            options.add_argument('disable-gui')
+            kwargs['chrome_options'] = options
+        webdriver_cls = self.import_webdriver(browser)
         if webdriver_cls:
             return webdriver_cls(*args, **kwargs)
 
