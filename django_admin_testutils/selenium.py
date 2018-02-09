@@ -1,5 +1,6 @@
 from __future__ import unicode_literals, absolute_import
 
+import os
 import sys
 import unittest
 from unittest import SkipTest
@@ -75,6 +76,8 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
             options = ChromeOptions()
             options.add_argument('headless')
             options.add_argument('disable-gui')
+            if os.environ.get('CHROME_BIN'):
+                options.binary_location = os.environ['CHROME_BIN']
             kwargs['chrome_options'] = options
         webdriver_cls = self.import_webdriver(browser)
         if webdriver_cls:
