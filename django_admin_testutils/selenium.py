@@ -60,7 +60,10 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
         return import_string(browser_import)
 
     def create_webdriver(self, *args, **kwargs):
+        import selenium
         from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+        selenium_version = tuple(map(int, selenium.__version__.split('.')))
 
         browser, _, url = self.browser.partition('+')
         if url:
@@ -78,7 +81,10 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
             options.add_argument('disable-gui')
             if os.environ.get('CHROME_BIN'):
                 options.binary_location = os.environ['CHROME_BIN']
-            kwargs['chrome_options'] = options
+            if selenium_version < (3, 8, 0):
+                kwargs['chrome_options'] = options
+            else:
+                kwargs['options'] = options
         webdriver_cls = self.import_webdriver(browser)
         if webdriver_cls:
             return webdriver_cls(*args, **kwargs)
