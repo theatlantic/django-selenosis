@@ -79,6 +79,7 @@ class SeleniumTestCaseBase(type(LiveServerTestCase)):
             options = ChromeOptions()
             options.add_argument('headless')
             options.add_argument('disable-gui')
+            options.add_argument('no-sandbox')
             if os.environ.get('CHROME_BIN'):
                 options.binary_location = os.environ['CHROME_BIN']
             if selenium_version < (3, 8, 0):

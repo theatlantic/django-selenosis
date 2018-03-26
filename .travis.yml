@@ -1,5 +1,17 @@
 language: python
 
+sudo: false
+
+addons:
+  chrome: stable
+
+cache:
+  pip: true
+
+env:
+  global:
+    - PATH=$HOME/bin:$PATH
+
 matrix:
   include:
     - { python: 2.7, env: TOXENV=py27-dj18 }
@@ -23,7 +35,16 @@ matrix:
 install:
   - pip install tox 
 
-script:
-  - travis_retry travis_retry travis_retry tox -- --failfast
+before_script:
+  - mkdir -p ~/bin
+  - |
+    if [ ! -e ~/bin/chromedriver ]; then
+      export CHROMEDRIVER_VERSION=$(curl -q http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+      wget -N http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -P ~/
+      unzip ~/chromedriver_linux64.zip -d ~/bin
+      rm ~/chromedriver_linux64.zip
+      chmod +x ~/bin/chromedriver
+    fi
 
-sudo: false
+script:
+  - travis_retry tox -- --selenium=chrome-headless --verbosity=3 --failfast
