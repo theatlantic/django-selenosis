@@ -1,0 +1,21 @@
+[run]
+branch = True
+source = django_admin_testutils
+omit =
+  */tests/*
+
+[report]
+ignore_errors = True
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+
+[xml]
+output = reports/coverage.xml
+
+[html]
+directory = reports/coverage

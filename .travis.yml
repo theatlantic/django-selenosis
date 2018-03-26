@@ -2,26 +2,23 @@ language: python
 
 matrix:
   include:
-    - python: 2.7
-      env: TOXENV=py27-dj18
-    - python: 2.7
-      env: TOXENV=py27-dj18-grp
-    - python: 2.7
-      env: TOXENV=py27-dj19
-    - python: 2.7
-      env: TOXENV=py27-dj19-grp
-    - python: 2.7
-      env: TOXENV=py27-dj110
-    - python: 3.6
-      env: TOXENV=py36-dj18
-    - python: 3.6
-      env: TOXENV=py36-dj19
-    - python: 3.6
-      env: TOXENV=py36-dj110
-    - python: 3.6
-      env: TOXENV=py36-djmaster
+    - { python: 2.7, env: TOXENV=py27-dj18 }
+    - { python: 2.7, env: TOXENV=py27-dj18-grp }
+    - { python: 3.4, env: TOXENV=py34-dj18 }
+    - { python: 2.7, env: TOXENV=py27-dj19 }
+    - { python: 2.7, env: TOXENV=py27-dj19-grp }
+    - { python: 3.4, env: TOXENV=py34-dj19 }
+    - { python: 2.7, env: TOXENV=py27-dj110 }
+    - { python: 2.7, env: TOXENV=py27-dj110-grp }
+    - { python: 3.4, env: TOXENV=py34-dj110 }
+    - { python: 2.7, env: TOXENV=py27-dj111 }
+    - { python: 2.7, env: TOXENV=py27-dj111-grp }
+    - { python: 3.6, env: TOXENV=py36-dj111 }
+    - { python: 3.6, env: TOXENV=py36-dj20 }
+    - { python: 3.6, env: TOXENV=py36-dj20-grp }
+    - { python: 3.6, env: TOXENV=py36-dj21 }
   allow_failures:
-    - env: TOXENV=py36-djmaster
+    - env: TOXENV=py36-dj21
 
 install:
   - pip install tox 
