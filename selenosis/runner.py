@@ -68,8 +68,8 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
     default_log_by_verbosity = False
 
     def __init__(self, **kwargs):
-        self.log_by_verbosity = kwargs.pop('log_by_verbosity')
-        browsers = kwargs.pop('selenium')
+        self.log_by_verbosity = kwargs.pop('log_by_verbosity', False)
+        browsers = kwargs.pop('selenium', None)
         if not browsers:
             try:
                 SelenosisTestCaseBase.import_webdriver('phantomjs')
