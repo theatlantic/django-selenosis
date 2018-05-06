@@ -36,8 +36,12 @@ class RunTests(object):
             warnings.filterwarnings(
                 "ignore", "__class__ not set defining", DeprecationWarning)
 
-        parser = CommandParser(
-            None, usage="%(prog)s [options] [args]", add_help=False)
+        if django.VERSION > (2, 1):
+            parser = CommandParser(
+                usage="%(prog)s [options] [args]", add_help=False)
+        else:
+            parser = CommandParser(
+                None, usage="%(prog)s [options] [args]", add_help=False)
         default_settings = os.environ.get(
             'DJANGO_SETTINGS_MODULE', self.default_settings_module)
         parser.add_argument('--settings', default=default_settings)
