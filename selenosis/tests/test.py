@@ -1,6 +1,62 @@
+import os.path
+from os.path import abspath
+import pickle
+import sys
+import unittest
+
+from django.utils import six
+
 from selenosis import AdminSelenosisTestCase
+from selenosis.runner import PatchedTestLoader
 
 from .models import Publisher, Book, Author
+
+
+class PatchedTestLoaderTestCase(unittest.TestCase):
+    """
+    Test backport of Python 3.4 fix for unittest picklability. Essentially
+    taken wholesale from CPython Lib/unittest/test/test_discovery.py
+
+    See https://bugs.python.org/issue22903
+    """
+
+    def setup_import_issue_package_tests(self, vfs):
+        self.addCleanup(setattr, os, 'listdir', os.listdir)
+        self.addCleanup(setattr, os.path, 'isfile', os.path.isfile)
+        self.addCleanup(setattr, os.path, 'isdir', os.path.isdir)
+        self.addCleanup(sys.path.__setitem__, slice(None), list(sys.path))
+
+        def list_dir(path):
+            return list(vfs[path])
+
+        os.listdir = list_dir
+        os.path.isdir = lambda path: not path.endswith('.py')
+        os.path.isfile = lambda path: path.endswith('.py')
+
+    def test_discover_with_init_modules_that_fail_to_import(self):
+        if six.PY3:
+            raise unittest.SkipTest("Patched loader only used for Python 2.x")
+
+        self.setup_import_issue_package_tests({
+            abspath('/foo'): ['my_package'],
+            abspath('/foo/my_package'): ['__init__.py', 'test_module.py'],
+        })
+
+        def _get_module_from_name(name):
+            raise ImportError("Cannot import %s" % name)
+
+        loader = PatchedTestLoader()
+        loader._get_module_from_name = _get_module_from_name
+        suite = loader.discover(abspath('/foo'))
+
+        test = list(list(suite)[0])[0]  # extract test from suite
+        method_name = test._testMethodName
+        with self.assertRaises(ImportError):
+            getattr(test, method_name)()
+
+        # Check picklability
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
+            pickle.loads(pickle.dumps(test, proto))
 
 
 class TestSelenosisTestCase(AdminSelenosisTestCase):
