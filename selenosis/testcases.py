@@ -261,7 +261,11 @@ class AdminSelenosisTestCase(six.with_metaclass(
         """
         Helper function to log into the admin.
         """
-        self.client.login(username=username, password=password)
+        if hasattr(self.client, 'force_login'):
+            user = get_user_model().objects.get(username=username)
+            self.client.force_login(user)
+        else:
+            self.client.login(username=username, password=password)
         self.selenium.get("%s%s" %
             (self.live_server_url, '/static/selenosis/blank.html'))
         self.wait_page_loaded()
