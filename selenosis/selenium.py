@@ -93,15 +93,22 @@ class SelenosisTestCaseBase(type(LiveServerTestCase)):
 
 class SelenosisTestCase(six.with_metaclass(SelenosisTestCaseBase, LiveServerTestCase)):
 
+    skip_selenium_exception = False
+
     @classmethod
     def setUpClass(cls):
         try:
             selenium = cls.create_webdriver()
         except Exception as e:
+            if not cls.skip_selenium_exception:
+                raise
             exc = SkipTest("%s" % e)
             six.reraise(SkipTest, exc, sys.exc_info()[2])
         if not selenium:
-            raise SkipTest("Selenosis configured incorrectly")
+            if cls.skip_selenium_exception:
+                raise SkipTest("Selenium configured incorrectly")
+            else:
+                raise Exception("Selenium configured incorrectly")
         cls.selenium = selenium
         cls.selenium.implicitly_wait(10)
         super(SelenosisTestCase, cls).setUpClass()
