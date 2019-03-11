@@ -4,7 +4,7 @@ import pickle
 import sys
 import unittest
 
-from django.utils import six
+import six
 
 from selenosis import AdminSelenosisTestCase
 from selenosis.runner import PatchedTestLoader

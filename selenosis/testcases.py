@@ -16,8 +16,8 @@ except ImportError:
     # Django <= 1.9
     from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
-from django.utils import six
-from django.utils.six.moves.urllib.parse import urlparse
+import six
+from six.moves.urllib.parse import urlparse
 
 from .selenium import SelenosisTestCaseBase, SelenosisTestCase
 from .utils import tag

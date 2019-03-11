@@ -4,7 +4,7 @@ import logging
 import unittest
 
 import django.test.runner
-from django.utils import six
+import six
 
 import selenosis
 

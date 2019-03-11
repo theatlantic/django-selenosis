@@ -31,6 +31,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'Django>=1.8',
+        'six',
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',

@@ -63,6 +63,7 @@ class RunTests(object):
             # Grappelli uses the deprecated django.conf.urls.patterns, but we
             # don't want this to fail our tests.
             warnings.filterwarnings("ignore", "django.conf.urls.patterns", Warning)
+            warnings.filterwarnings("ignore", "{% load admin_static %}")
 
         self.execute(flags, test_labels)
 

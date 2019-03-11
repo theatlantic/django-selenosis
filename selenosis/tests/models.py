@@ -2,13 +2,18 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 try:
     # Django 1.10
     from django.urls import reverse
 except ImportError:
     # Django <= 1.9
     from django.core.urlresolvers import reverse
+
+try:
+    from django.utils.encoding import python_2_unicode_compatible
+except ImportError:
+    def python_2_unicode_compatible(cls):
+        return cls
 
 
 @python_2_unicode_compatible

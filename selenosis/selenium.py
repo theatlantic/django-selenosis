@@ -6,7 +6,7 @@ import unittest
 from unittest import SkipTest
 
 from django.test import LiveServerTestCase
-from django.utils import six
+import six
 from django.utils.module_loading import import_string
 from django.utils.text import capfirst
 
