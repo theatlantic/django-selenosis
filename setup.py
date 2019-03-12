@@ -17,7 +17,7 @@ def read(*parts):
 
 setup(
     name='django-selenosis',
-    version='1.1.2',
+    version='1.1.3',
     license='BSD',
     description='Helpers for writing selenium tests for Django',
     long_description=read('README.rst'),
@@ -48,5 +48,10 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Framework :: Django',
+        'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.11',
+        'Framework :: Django :: 2.0',
+        'Framework :: Django :: 2.1',
+        'Framework :: Django :: 2.2',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ])
