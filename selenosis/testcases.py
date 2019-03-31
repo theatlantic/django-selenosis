@@ -180,6 +180,7 @@ class AdminSelenosisTestCase(six.with_metaclass(
     page_load_timeout = 10
     default_timeout = 10
     admin_site_name = 'admin'
+    auto_login = True
 
     @property
     def has_grappelli(self):
@@ -221,9 +222,10 @@ class AdminSelenosisTestCase(six.with_metaclass(
         super(AdminSelenosisTestCase, self).setUp()
         self.set_window_size()
         self.selenium.set_page_load_timeout(self.page_load_timeout)
-        get_user_model().objects.create_superuser(
-            username='super', password='secret', email='super@example.com')
-        self.admin_login("super", "secret")
+        if self.auto_login:
+            get_user_model().objects.create_superuser(
+                username='super', password='secret', email='super@example.com')
+            self.admin_login("super", "secret")
 
     def set_window_size(self):
         self.selenium.set_window_size(*self.window_size)
