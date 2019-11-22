@@ -272,7 +272,11 @@ class AdminSelenosisTestCase(six.with_metaclass(
             (self.live_server_url, '/static/selenosis/blank.html'))
         self.wait_page_loaded()
         domain = urlparse(self.live_server_url).netloc.split(':')[0]
-        cookie_dict = {'path': '/', 'domain': domain}
+        cookie_dict = {'path': '/'}
+        # Per the spec, domain must have a '.'. Otherwise it can fail
+        # (as it does in recent chromedriver, if domain is localhost)
+        if '.' in domain:
+            cookie_dict['domain'] = domain
         for k, v in self.client.cookies.items():
             cookie = dict(cookie_dict, name=k, value=v.value)
             self.selenium.add_cookie(cookie)
