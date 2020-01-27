@@ -17,7 +17,7 @@ def read(*parts):
 
 setup(
     name='django-selenosis',
-    version='1.1.5',
+    version='1.2.0b1',
     license='BSD',
     description='Helpers for writing selenium tests for Django',
     long_description=read('README.rst'),
@@ -33,6 +33,12 @@ setup(
         'Django>=1.8',
         'six',
     ],
+    entry_points={
+        "pytest11": [
+            "selenosis = selenosis.pytest_plugin.selenosis",
+            "tags = selenosis.pytest_plugin.tags",
+        ],
+    },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
