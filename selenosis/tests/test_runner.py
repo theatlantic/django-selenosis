@@ -3,8 +3,8 @@ from __future__ import print_function
 import logging
 import unittest
 
-import django.test.runner
 import six
+import django.test.runner
 
 import selenosis
 
