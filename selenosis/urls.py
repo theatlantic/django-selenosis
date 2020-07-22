@@ -5,10 +5,7 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-if django.VERSION < (1, 9):
-    urlpatterns = [url(r'^admin/', include(admin.site.urls))]
-else:
-    urlpatterns = [url(r'^admin/', admin.site.urls)]
+urlpatterns = [url(r'^admin/', admin.site.urls)]
 
 try:
     import grappelli.urls

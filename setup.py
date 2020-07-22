@@ -1,23 +1,18 @@
 #!/usr/bin/env python
+import io
 from os import path
-import codecs
 
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from ez_setup import use_setuptools
-    use_setuptools()
-    from setuptools import setup, find_packages
+from setuptools import setup, find_packages
 
 
 def read(*parts):
     file_path = path.join(path.dirname(__file__), *parts)
-    return codecs.open(file_path, encoding='utf-8').read()
+    return io.open(file_path).read()
 
 
 setup(
     name='django-selenosis',
-    version='1.2.0',
+    version='1.3.0',
     license='BSD',
     description='Helpers for writing selenium tests for Django',
     long_description=read('README.rst'),
@@ -30,7 +25,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Django>=1.8',
+        'Django>=1.11',
         'six',
     ],
     entry_points={
@@ -50,14 +45,13 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Framework :: Django',
         'Framework :: Django :: 1.8',
         'Framework :: Django :: 1.11',
         'Framework :: Django :: 2.0',
         'Framework :: Django :: 2.1',
         'Framework :: Django :: 2.2',
+        'Framework :: Django :: 3.0',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ])

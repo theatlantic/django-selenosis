@@ -7,3 +7,4 @@ ghostdriver.log
 dist/
 /reports
 .coverage
+.python-version

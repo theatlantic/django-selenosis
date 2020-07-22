@@ -5,19 +5,15 @@ import functools
 import re
 from unittest import expectedFailure, SkipTest
 
+import six
+from six.moves.urllib.parse import urlparse
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.db.models import Model
-try:
-    # Django 1.10
-    from django.urls import reverse
-except ImportError:
-    # Django <= 1.9
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.utils import override_settings
-import six
-from six.moves.urllib.parse import urlparse
 
 from .selenium import SelenosisTestCaseBase, SelenosisTestCase
 from .utils import tag
@@ -161,7 +157,7 @@ class SelenosisLiveServerTestCaseMixin(object):
         try:
             self.wait_until(lambda d: len(d.window_handles) == 1)
         except:
-            self.close()
+            self.selenium.close()
             raise
         finally:
             self.selenium.switch_to.window(self.selenium.window_handles[0])

@@ -1,19 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models
-try:
-    # Django 1.10
-    from django.urls import reverse
-except ImportError:
-    # Django <= 1.9
-    from django.core.urlresolvers import reverse
+from six import python_2_unicode_compatible
 
-try:
-    from django.utils.encoding import python_2_unicode_compatible
-except ImportError:
-    def python_2_unicode_compatible(cls):
-        return cls
+from django.db import models
+from django.urls import reverse
+
 
 
 @python_2_unicode_compatible
