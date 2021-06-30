@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-from six import python_2_unicode_compatible
-
 from django.db import models
 from django.urls import reverse
 
 
-
-@python_2_unicode_compatible
 class Publisher(models.Model):
     name = models.CharField(max_length=50)
 
@@ -16,7 +10,6 @@ class Publisher(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class Author(models.Model):
     name = models.CharField(max_length=50)
 
@@ -38,7 +31,6 @@ class Author(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class Book(models.Model):
     name = models.CharField(max_length=50)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)

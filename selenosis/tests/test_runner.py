@@ -1,9 +1,7 @@
-from __future__ import print_function
-
+import io
 import logging
 import unittest
 
-import six
 import django.test.runner
 
 import selenosis
@@ -76,7 +74,7 @@ class DiscoverRunnerTestCase(selenosis.SelenosisTestCase):
         discover_runner = selenosis.DiscoverRunner()
         suite = self._get_suite(discover_runner, self.unexpected_success_failfast)
         runner = discover_runner.test_runner(
-            stream=six.StringIO(),
+            stream=io.StringIO(),
             failfast=True,
             verbosity=1,
             resultclass=discover_runner.get_resultclass())
@@ -89,7 +87,7 @@ class DiscoverRunnerTestCase(selenosis.SelenosisTestCase):
         discover_runner = selenosis.DiscoverRunner(debug_sql=True)
         suite = self._get_suite(discover_runner, self.unexpected_success_failfast)
         runner = discover_runner.test_runner(
-            stream=six.StringIO(),
+            stream=io.StringIO(),
             failfast=True,
             verbosity=1,
             resultclass=discover_runner.get_resultclass())

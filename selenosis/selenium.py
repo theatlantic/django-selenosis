@@ -1,12 +1,9 @@
-from __future__ import unicode_literals, absolute_import
-
 import os
 import sys
 import unittest
 from unittest import SkipTest
 
 from django.test import LiveServerTestCase
-import six
 from django.utils.module_loading import import_string
 from django.utils.text import capfirst
 
@@ -24,7 +21,7 @@ class SelenosisTestCaseBase(type(LiveServerTestCase)):
         """
         test_class = super(SelenosisTestCaseBase, cls).__new__(cls, name, bases, attrs)
         # If the test class is either browser-specific or a test base, return it.
-        is_test_attr = lambda n: n.startswith('test') and callable(getattr(test_class, n))
+        is_test_attr = lambda n: n.startswith('test') and callable(getattr(test_class, n))  # noqa
         if test_class.browser or not any(is_test_attr(name) for name in dir(test_class)):
             return test_class
         elif test_class.browsers:
@@ -86,12 +83,13 @@ class SelenosisTestCaseBase(type(LiveServerTestCase)):
                 kwargs['chrome_options'] = options
             else:
                 kwargs['options'] = options
+
         webdriver_cls = self.import_webdriver(browser)
         if webdriver_cls:
             return webdriver_cls(*args, **kwargs)
 
 
-class SelenosisTestCase(six.with_metaclass(SelenosisTestCaseBase, LiveServerTestCase)):
+class SelenosisTestCase(LiveServerTestCase, metaclass=SelenosisTestCaseBase):
 
     skip_selenium_exception = False
 
@@ -102,8 +100,7 @@ class SelenosisTestCase(six.with_metaclass(SelenosisTestCaseBase, LiveServerTest
         except Exception as e:
             if not cls.skip_selenium_exception:
                 raise
-            exc = SkipTest("%s" % e)
-            six.reraise(SkipTest, exc, sys.exc_info()[2])
+            raise SkipTest("%s" % e) from e
         if not selenium:
             if cls.skip_selenium_exception:
                 raise SkipTest("Selenium configured incorrectly")
