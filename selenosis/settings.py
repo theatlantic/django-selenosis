@@ -1,8 +1,6 @@
 import os
 import tempfile
 
-import django
-
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 temp_dir = tempfile.mkdtemp()

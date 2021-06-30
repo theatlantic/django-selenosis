@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import io
 from os import path
 
 from setuptools import setup, find_packages
@@ -7,12 +6,12 @@ from setuptools import setup, find_packages
 
 def read(*parts):
     file_path = path.join(path.dirname(__file__), *parts)
-    return io.open(file_path).read()
+    return open(file_path).read()
 
 
 setup(
     name='django-selenosis',
-    version='1.3.0',
+    version='2.0.0',
     license='BSD',
     description='Helpers for writing selenium tests for Django',
     long_description=read('README.rst'),
@@ -24,10 +23,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-        'Django>=1.11',
-        'six',
-    ],
+    install_requires=['Django>=2.2',],
     entry_points={
         "pytest11": [
             "selenosis = selenosis.pytest_plugin.selenosis",
@@ -42,16 +38,13 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Framework :: Django',
-        'Framework :: Django :: 1.8',
-        'Framework :: Django :: 1.11',
-        'Framework :: Django :: 2.0',
-        'Framework :: Django :: 2.1',
         'Framework :: Django :: 2.2',
-        'Framework :: Django :: 3.0',
+        'Framework :: Django :: 3.1',
+        'Framework :: Django :: 3.2',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ])

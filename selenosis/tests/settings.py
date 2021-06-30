@@ -1,4 +1,4 @@
-from selenosis.settings import *
+from selenosis.settings import *  # noqa
 
 
-INSTALLED_APPS += ('selenosis.tests',)
+INSTALLED_APPS += ('selenosis.tests',)  # noqa

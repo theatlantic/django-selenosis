@@ -1,12 +1,8 @@
-from __future__ import absolute_import
-
 import contextlib
 import functools
 import re
+from urllib.parse import urlparse
 from unittest import expectedFailure, SkipTest
-
-import six
-from six.moves.urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -28,7 +24,7 @@ class AdminSelenosisTestCaseBase(SelenosisTestCaseBase):
 
 
 @tag('selenium')
-class SelenosisLiveServerTestCaseMixin(object):
+class SelenosisLiveServerTestCaseMixin:
     maxDiff = None
     longMessage = True
     page_load_timeout = 10
@@ -40,7 +36,7 @@ class SelenosisLiveServerTestCaseMixin(object):
         # open)
         try:
             popup_window = self.selenium.window_handles[1]
-        except:
+        except:  # noqa
             pass
         else:
             self.selenium.switch_to.window(popup_window)
@@ -156,7 +152,7 @@ class SelenosisLiveServerTestCaseMixin(object):
         yield
         try:
             self.wait_until(lambda d: len(d.window_handles) == 1)
-        except:
+        except:  # noqa
             self.selenium.close()
             raise
         finally:
@@ -168,9 +164,11 @@ class SelenosisLiveServerTestCase(
     pass
 
 
-class AdminSelenosisTestCase(six.with_metaclass(
-        AdminSelenosisTestCaseBase, SelenosisLiveServerTestCaseMixin,
-        SelenosisTestCase, StaticLiveServerTestCase)):
+class AdminSelenosisTestCase(
+        SelenosisLiveServerTestCaseMixin,
+        SelenosisTestCase,
+        StaticLiveServerTestCase,
+        metaclass=AdminSelenosisTestCaseBase):
 
     window_size = (1120, 1300)
     page_load_timeout = 10
@@ -231,7 +229,7 @@ class AdminSelenosisTestCase(six.with_metaclass(
         self.selenium.set_page_load_timeout(self.page_load_timeout)
         try:
             self.selenium.execute_script("window.$ = django.jQuery")
-        except:
+        except:  # noqa
             pass
         else:
             self.make_header_footer_position_static()
@@ -264,8 +262,7 @@ class AdminSelenosisTestCase(six.with_metaclass(
             self.client.force_login(user)
         else:
             self.client.login(username=username, password=password)
-        self.selenium.get("%s%s" %
-            (self.live_server_url, '/static/selenosis/blank.html'))
+        self.selenium.get("%s%s" % (self.live_server_url, '/static/selenosis/blank.html'))
         self.wait_page_loaded()
         domain = urlparse(self.live_server_url).netloc.split(':')[0]
         cookie_dict = {'path': '/'}
