@@ -8,3 +8,6 @@ dist/
 /reports
 .coverage
 .python-version
+chromedriver
+chromedriver_mac64.zip
+README.html
