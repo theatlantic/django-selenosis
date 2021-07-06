@@ -79,10 +79,8 @@ class SelenosisTestCaseBase(type(LiveServerTestCase)):
             options.add_argument('no-sandbox')
             if os.environ.get('CHROME_BIN'):
                 options.binary_location = os.environ['CHROME_BIN']
-            if selenium_version < (3, 8, 0):
-                kwargs['chrome_options'] = options
-            else:
-                kwargs['options'] = options
+
+            kwargs['options'] = options
 
         webdriver_cls = self.import_webdriver(browser)
         if webdriver_cls:
