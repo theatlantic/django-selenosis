@@ -11,3 +11,5 @@ dist/
 chromedriver
 chromedriver_mac64.zip
 README.html
+venv
+.venv

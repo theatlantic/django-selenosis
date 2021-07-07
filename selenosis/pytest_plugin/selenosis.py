@@ -24,11 +24,11 @@ class SelenosisDriverAction(argparse.Action):
 
         if not browsers:
             try:
-                SelenosisTestCaseBase.import_webdriver('phantomjs')
+                SelenosisTestCaseBase.import_webdriver('chrome-headless')
             except:
                 browsers = ['skip']
             else:
-                browsers = ['phantomjs']
+                browsers = ['chrome-headless']
 
         SelenosisTestCaseBase.browsers = browsers
 

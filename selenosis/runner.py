@@ -94,11 +94,11 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
         browsers = kwargs.pop('selenium', None)
         if not browsers:
             try:
-                SelenosisTestCaseBase.import_webdriver('phantomjs')
+                SelenosisTestCaseBase.import_webdriver('chrome-headless')
             except:
                 browsers = ['skip']
             else:
-                browsers = ['phantomjs']
+                browsers = ['chrome-headless']
         SelenosisTestCaseBase.browsers = browsers
         if not DJANGO_NATIVE_TAG_SUPPORT:
             self.tags = set(kwargs.pop('tags', None) or [])
@@ -118,7 +118,7 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
         parser.add_argument(
             '--selenium', action=ActionSelenosis, metavar='BROWSERS',
             help='A comma-separated list of browsers to run the Selenosis '
-                 'tests against. Defaults to "phantomjs".')
+                 'tests against. Defaults to "chrome-headless".')
         parser.add_argument(
             '--%slog-by-verbosity' % ('no-' if cls.default_log_by_verbosity else ''),
             action=('store_false' if cls.default_log_by_verbosity else 'store_false'),
