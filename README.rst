@@ -27,6 +27,7 @@ You can use homebrew or manually download ``chomedriver``:
 
 2. Manually::
 
+    export PATH="$PWD:$PATH"
     export CHROMEDRIVER_VERSION=$(curl -q http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
     curl -O http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_mac64.zip
     unzip chromedriver_mac64.zip

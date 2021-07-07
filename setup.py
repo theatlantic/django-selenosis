@@ -20,7 +20,7 @@ setup(
     author_email='fdintino@theatlantic.com',
     maintainer='Frankie Dintino',
     maintainer_email='fdintino@theatlantic.com',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     include_package_data=True,
     zip_safe=False,
     install_requires=['Django>=2.2',],
