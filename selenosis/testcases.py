@@ -1,28 +1,23 @@
-from __future__ import absolute_import
-
 import contextlib
 import functools
 import re
+from urllib.parse import urlparse
 from unittest import expectedFailure, SkipTest
-
-import six
-from six.moves.urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.db.models import Model
 from django.urls import reverse
-from django.test.utils import override_settings
+from django.test import tag, override_settings
 
 from .selenium import SelenosisTestCaseBase, SelenosisTestCase
-from .utils import tag
 
 
 class AdminSelenosisTestCaseBase(SelenosisTestCaseBase):
 
     def __new__(cls, name, bases, attrs):
-        new_cls = super(AdminSelenosisTestCaseBase, cls).__new__(cls, name, bases, attrs)
+        new_cls = super().__new__(cls, name, bases, attrs)
         root_urlconf = getattr(new_cls, 'root_urlconf', 'selenosis.urls')
         return override_settings(ROOT_URLCONF=root_urlconf)(new_cls)
 
@@ -46,7 +41,7 @@ class SelenosisLiveServerTestCaseMixin(object):
             self.selenium.switch_to.window(popup_window)
             self.selenium.close()
             self.selenium.switch_to.window(self.selenium.window_handles[0])
-        super(SelenosisLiveServerTestCaseMixin, self)._post_teardown()
+        super()._post_teardown()
 
     def wait_for(self, css_selector, timeout=None):
         """
@@ -168,9 +163,10 @@ class SelenosisLiveServerTestCase(
     pass
 
 
-class AdminSelenosisTestCase(six.with_metaclass(
-        AdminSelenosisTestCaseBase, SelenosisLiveServerTestCaseMixin,
-        SelenosisTestCase, StaticLiveServerTestCase)):
+class AdminSelenosisTestCase(
+        SelenosisLiveServerTestCaseMixin,
+        SelenosisTestCase, StaticLiveServerTestCase,
+        metaclass=AdminSelenosisTestCaseBase):
 
     window_size = (1120, 1300)
     page_load_timeout = 10
@@ -211,11 +207,11 @@ class AdminSelenosisTestCase(six.with_metaclass(
 
     @classmethod
     def setUpClass(cls):
-        super(AdminSelenosisTestCase, cls).setUpClass()
+        super().setUpClass()
         __import__(settings.ROOT_URLCONF)
 
     def setUp(self):
-        super(AdminSelenosisTestCase, self).setUp()
+        super().setUp()
         self.set_window_size()
         self.selenium.set_page_load_timeout(self.page_load_timeout)
         if self.auto_login:
@@ -245,7 +241,7 @@ class AdminSelenosisTestCase(six.with_metaclass(
         from selenium.common.exceptions import TimeoutException
         try:
             # Wait for the next page to be loaded
-            super(AdminSelenosisTestCase, self).wait_page_loaded()
+            super().wait_page_loaded()
         except TimeoutException:
             # IE7 occasionally returns an error "Internet Explorer cannot
             # display the webpage" and doesn't load the next page. We just
@@ -264,8 +260,8 @@ class AdminSelenosisTestCase(six.with_metaclass(
             self.client.force_login(user)
         else:
             self.client.login(username=username, password=password)
-        self.selenium.get("%s%s" %
-            (self.live_server_url, '/static/selenosis/blank.html'))
+        self.selenium.get("%s%s" % (
+            self.live_server_url, '/static/selenosis/blank.html'))
         self.wait_page_loaded()
         domain = urlparse(self.live_server_url).netloc.split(':')[0]
         cookie_dict = {'path': '/'}

@@ -1,15 +1,14 @@
-import django
-from django.conf.urls import include, url
+from django.urls import include, path
 from django.contrib import admin
 
 
 admin.autodiscover()
 
-urlpatterns = [url(r'^admin/', admin.site.urls)]
+urlpatterns = [path('admin/', admin.site.urls)]
 
 try:
     import grappelli.urls
 except ImportError:
     pass
 else:
-    urlpatterns += [url(r"^grappelli/", include(grappelli.urls))]
+    urlpatterns += [path("grappelli/", include(grappelli.urls))]

@@ -14,6 +14,7 @@ def main():
         category=DeprecationWarning,
         message="Using or importing the ABCs from 'collections' instead of from 'collections.abc'",
     )
+    warnings.filterwarnings('ignore', "'grappelli' defines default_app_config")
 
     os.environ.setdefault('DJANGO_LIVE_TEST_SERVER_ADDRESS', 'localhost:8081-8089')
     runtests = selenosis.RunTests(

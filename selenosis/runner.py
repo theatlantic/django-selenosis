@@ -3,13 +3,8 @@ import logging
 import unittest
 
 import django.test.runner
-import six
 
 from selenosis.selenium import SelenosisTestCaseBase
-
-
-#: Whether Django has support for tag decorators (true for Django >= 1.10)
-DJANGO_NATIVE_TAG_SUPPORT = hasattr(django.test.runner, 'filter_tests_by_tags')
 
 
 class ActionSelenosis(argparse.Action):
@@ -113,23 +108,17 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
 
     default_log_by_verbosity = False
 
-    if six.PY2:
-        test_loader = PatchedTestLoader()
-
     def __init__(self, **kwargs):
         self.log_by_verbosity = kwargs.pop('log_by_verbosity', False)
         browsers = kwargs.pop('selenium', None)
         if not browsers:
             try:
-                SelenosisTestCaseBase.import_webdriver('phantomjs')
+                SelenosisTestCaseBase.import_webdriver('chrome')
             except:
                 browsers = ['skip']
             else:
-                browsers = ['phantomjs']
+                browsers = ['chrome-headless']
         SelenosisTestCaseBase.browsers = browsers
-        if not DJANGO_NATIVE_TAG_SUPPORT:
-            self.tags = set(kwargs.pop('tags', None) or [])
-            self.exclude_tags = set(kwargs.pop('exclude_tags', None) or [])
 
         if browsers == 'skip':
             self.exclude_tags.add('selenium')
@@ -153,13 +142,6 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
             dest='log_by_verbosity',
             help='%s matching log levels to the verbosity flag' % (
                 'Disable' if cls.default_log_by_verbosity else 'Enable'))
-        if not DJANGO_NATIVE_TAG_SUPPORT:
-            parser.add_argument(
-                '--tag', action='append', dest='tags',
-                help='Run only tests with the specified tag. Can be used multiple times.')
-            parser.add_argument(
-                '--exclude-tag', action='append', dest='exclude_tags',
-                help='Do not run tests with the specified tag. Can be used multiple times.')
 
     verbosity_log_levels = {
         0: logging.ERROR,
@@ -177,40 +159,9 @@ class DiscoverRunner(django.test.runner.DiscoverRunner):
         from django.conf import settings
         if self.log_by_verbosity:
             loggers = settings.LOGGING.get('loggers') or {}
-            for _, logger_opts in six.iteritems(loggers):
+            for _, logger_opts in loggers.items():
                 if 'level' not in logger_opts:
                     continue
                 level = logging._checkLevel(logger_opts['level'])
                 if level > self.log_level:
                     logger_opts['level'] = logging.getLevelName(self.log_level)
-
-    def build_suite(self, *args, **kwargs):
-        suite = super(DiscoverRunner, self).build_suite(*args, **kwargs)
-        if not DJANGO_NATIVE_TAG_SUPPORT:
-            if self.tags or self.exclude_tags:
-                suite = filter_tests_by_tags(suite, self.tags, self.exclude_tags)
-                suite = django.test.runner.reorder_suite(suite, self.reorder_by, self.reverse)
-        return suite
-
-
-if DJANGO_NATIVE_TAG_SUPPORT:
-    filter_tests_by_tags = django.test.runner.filter_tests_by_tags
-else:
-    def filter_tests_by_tags(suite, tags, exclude_tags):
-        suite_class = type(suite)
-        filtered_suite = suite_class()
-
-        for test in suite:
-            if isinstance(test, suite_class):
-                filtered_suite.addTests(filter_tests_by_tags(test, tags, exclude_tags))
-            else:
-                test_tags = set(getattr(test, 'tags', set()))
-                test_fn_name = getattr(test, '_testMethodName', str(test))
-                test_fn = getattr(test, test_fn_name, test)
-                test_fn_tags = set(getattr(test_fn, 'tags', set()))
-                all_tags = test_tags.union(test_fn_tags)
-                matched_tags = all_tags.intersection(tags)
-                if (matched_tags or not tags) and not all_tags.intersection(exclude_tags):
-                    filtered_suite.addTest(test)
-
-        return filtered_suite

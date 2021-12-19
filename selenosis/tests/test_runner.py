@@ -1,15 +1,8 @@
-from __future__ import print_function
-
+from io import StringIO
 import logging
 import unittest
 
-import six
-import django.test.runner
-
 import selenosis
-
-
-DJANGO_NATIVE_TAG_SUPPORT = hasattr(django.test.runner, 'filter_tests_by_tags')
 
 
 logger = logging.getLogger(__name__)
@@ -51,32 +44,12 @@ class DiscoverRunnerTestCase(selenosis.SelenosisTestCase):
             ordered_suite.addTest(test)
         return ordered_suite
 
-    def test_tags(self):
-        """Backported --tags= functionality should only include tests with @tag"""
-        if DJANGO_NATIVE_TAG_SUPPORT:
-            raise unittest.SkipTest('skipping test of native @tag implementation')
-        runner = selenosis.DiscoverRunner(tags=['tag1'])
-        suite = self._get_suite(runner, self.tag_decorator)
-        self.assertEqual(suite.countTestCases(), 1)
-        test = [t for t in suite][0]
-        self.assertEqual(test._testMethodName, 'test_tag1')
-
-    def test_exclude_tags(self):
-        """Backported --exclude-tags= functionality should exclude tests with @tag"""
-        if DJANGO_NATIVE_TAG_SUPPORT:
-            raise unittest.SkipTest('skipping test of native @tag implementation')
-        runner = selenosis.DiscoverRunner(exclude_tags=['tag1'])
-        suite = self._get_suite(runner, self.tag_decorator)
-        self.assertEqual(suite.countTestCases(), 1)
-        test = [t for t in suite][0]
-        self.assertEqual(test._testMethodName, 'test_tag2')
-
     def test_unexpected_success_failfast(self):
         """An unexpected success with --failfast should not stop the test runner"""
         discover_runner = selenosis.DiscoverRunner()
         suite = self._get_suite(discover_runner, self.unexpected_success_failfast)
         runner = discover_runner.test_runner(
-            stream=six.StringIO(),
+            stream=StringIO(),
             failfast=True,
             verbosity=1,
             resultclass=discover_runner.get_resultclass())
@@ -89,7 +62,7 @@ class DiscoverRunnerTestCase(selenosis.SelenosisTestCase):
         discover_runner = selenosis.DiscoverRunner(debug_sql=True)
         suite = self._get_suite(discover_runner, self.unexpected_success_failfast)
         runner = discover_runner.test_runner(
-            stream=six.StringIO(),
+            stream=StringIO(),
             failfast=True,
             verbosity=1,
             resultclass=discover_runner.get_resultclass())
