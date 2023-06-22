@@ -77,6 +77,8 @@ class SelenosisTestCaseBase(type(LiveServerTestCase)):
             options.add_argument('headless')
             options.add_argument('disable-gui')
             options.add_argument('no-sandbox')
+            if os.environ.get('DISABLE_DEV_SHM_USAGE'):
+                options.add_argument('disable-dev-shm-usage')
             if os.environ.get('CHROME_BIN'):
                 options.binary_location = os.environ['CHROME_BIN']
 
