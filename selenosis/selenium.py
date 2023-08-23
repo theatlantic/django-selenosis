@@ -19,6 +19,13 @@ class SelenosisTestCaseBase(type(LiveServerTestCase)):
         Dynamically create new classes and add them to the test module when
         multiple browsers specs are provided (e.g. --selenium=firefox,chrome).
         """
+        if os.environ.get("DJANGO_LIVE_TEST_SERVER_ADDRESS"):
+            host = os.environ["DJANGO_LIVE_TEST_SERVER_ADDRESS"]
+            port = 0
+            if ":" in host:
+                host, _, port = host.rpartition(":")
+            attrs.setdefault("host", host)
+            attrs.setdefault("port", int(port))
         test_class = super(SelenosisTestCaseBase, cls).__new__(cls, name, bases, attrs)
         # If the test class is either browser-specific or a test base, return it.
         is_test_attr = lambda n: n.startswith('test') and callable(getattr(test_class, n))  # noqa
