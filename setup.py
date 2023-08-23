@@ -11,7 +11,7 @@ def read(*parts):
 
 setup(
     name='django-selenosis',
-    version='2.0.1',
+    version='2.0.2',
     license='BSD',
     description='Helpers for writing selenium tests for Django',
     long_description=read('README.rst'),
