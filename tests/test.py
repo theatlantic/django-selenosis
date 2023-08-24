@@ -45,12 +45,14 @@ class TestSelenosisTestCase(AdminSelenosisTestCase):
         self.assertEqual(len(books), 1)
 
     def test_switch_to_popup(self):
+        from selenium.webdriver.common.by import By
+
         self.load_admin(self.author)
         with self.clickable_selector('#id_book_set-4-name') as el:
             el.send_keys('The Crying of Lot 49')
-        self.selenium.find_element_by_css_selector('#add_id_book_set-4-publisher').click()
+        self.selenium.find_element(By.CSS_SELECTOR, '#add_id_book_set-4-publisher').click()
         with self.switch_to_popup_window():
-            self.selenium.find_element_by_css_selector('#id_name').send_keys(
+            self.selenium.find_element(By.CSS_SELECTOR, '#id_name').send_keys(
                 'J. B. Lippincott & Co.')
             self.save_form()
         self.save_form()
