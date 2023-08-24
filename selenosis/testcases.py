@@ -109,41 +109,55 @@ class SelenosisLiveServerTestCaseMixin:
             message="Timeout waiting for clickable element at selector='%s'" % selector)
 
     def wait_until_available_selector(self, selector, timeout=None):
+        from selenium.webdriver.common.by import By
+
         self.wait_until(
-            lambda driver: driver.find_element_by_css_selector(selector),
+            lambda driver: driver.find_element(By.CSS_SELECTOR, selector),
             timeout=timeout,
             message="Timeout waiting for available element at selector='%s'" % selector)
 
     def wait_until_available_xpath(self, xpath, timeout=None):
+        from selenium.webdriver.common.by import By
+
         self.wait_until(
-            lambda driver: driver.find_element_by_xpath(xpath),
+            lambda driver: driver.find_element(By.XPATH, xpath),
             timeout=timeout,
             message="Timeout waiting for available element at xpath='%s'" % xpath)
 
     @contextlib.contextmanager
     def visible_selector(self, selector, timeout=None):
+        from selenium.webdriver.common.by import By
+
         self.wait_until_visible_selector(selector, timeout)
-        yield self.selenium.find_element_by_css_selector(selector)
+        yield self.selenium.find_element(By.CSS_SELECTOR, selector)
 
     @contextlib.contextmanager
     def clickable_selector(self, selector, timeout=None):
+        from selenium.webdriver.common.by import By
+
         self.wait_until_clickable_selector(selector, timeout)
-        yield self.selenium.find_element_by_css_selector(selector)
+        yield self.selenium.find_element(By.CSS_SELECTOR, selector)
 
     @contextlib.contextmanager
     def clickable_xpath(self, xpath, timeout=10):
+        from selenium.webdriver.common.by import By
+
         self.wait_until_clickable_xpath(xpath, timeout)
-        yield self.selenium.find_element_by_xpath(xpath)
+        yield self.selenium.find_element(By.XPATH, xpath)
 
     @contextlib.contextmanager
     def available_selector(self, selector, timeout=10):
+        from selenium.webdriver.common.by import By
+
         self.wait_until_available_selector(selector, timeout)
-        yield self.selenium.find_element_by_css_selector(selector)
+        yield self.selenium.find_element(By.CSS_SELECTOR, selector)
 
     @contextlib.contextmanager
     def available_xpath(self, xpath, timeout=10):
+        from selenium.webdriver.common.by import By
+
         self.wait_until_available_xpath(xpath, timeout)
-        yield self.selenium.find_element_by_xpath(xpath)
+        yield self.selenium.find_element(By.XPATH, xpath)
 
     @contextlib.contextmanager
     def switch_to_popup_window(self):
@@ -294,11 +308,13 @@ class AdminSelenosisTestCase(
         self.initialize_page()
 
     def save_form(self):
+        from selenium.webdriver.common.by import By
+
         has_continue = bool(
             self.selenium.execute_script(
                 'return django.jQuery("[name=_continue]").length'))
         name_attr = "_continue" if has_continue else "_save"
-        self.selenium.find_element_by_xpath('//*[@name="%s"]' % name_attr).click()
+        self.selenium.find_element(By.XPATH, '//*[@name="%s"]' % name_attr).click()
         if has_continue:
             self.wait_page_loaded()
             self.initialize_page()
