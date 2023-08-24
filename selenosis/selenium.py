@@ -50,6 +50,9 @@ class SelenosisTestCaseBase(type(LiveServerTestCase)):
                 )
                 setattr(module, browser_test_class.__name__, browser_test_class)
             return test_class
+        elif os.getenv("SELENOSIS_DRIVER"):
+            test_class.browser = os.environ["SELENOSIS_DRIVER"]
+            return test_class
         # If no browsers were specified, skip this class (it'll still be discovered).
         return unittest.skip('No browsers specified.')(test_class)
 
