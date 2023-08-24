@@ -20,7 +20,6 @@ def main():
         message="Using or importing the ABCs from 'collections' instead of from 'collections.abc'",
     )
 
-    os.environ.setdefault('DJANGO_LIVE_TEST_SERVER_ADDRESS', 'localhost:8081-8089')
     runtests = selenosis.RunTests("tests.settings", "tests")
     runtests()
 
