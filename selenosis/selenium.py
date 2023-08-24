@@ -3,9 +3,49 @@ import sys
 import unittest
 from unittest import SkipTest
 
+from django.core.servers.basehttp import ThreadedWSGIServer
+from django.db import connections
 from django.test import LiveServerTestCase
+from django.test.testcases import LiveServerThread, QuietWSGIRequestHandler
 from django.utils.module_loading import import_string
 from django.utils.text import capfirst
+
+
+class ConnectionOverrideThreadedWSGIServer(ThreadedWSGIServer):
+    def __init__(self, *args, connections_override=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.connections_override = connections_override
+
+    # socketserver.ThreadingMixIn.process_request() passes this method as
+    # the target to a new Thread object.
+    def process_request_thread(self, request, client_address):
+        if self.connections_override:
+            # Override this thread's database connections with the ones
+            # provided by the parent thread.
+            for alias, conn in self.connections_override.items():
+                connections[alias] = conn
+        super().process_request_thread(request, client_address)
+
+    def _close_connections(self):
+        # Used for mocking in tests.
+        connections.close_all()
+
+    def close_request(self, request):
+        self._close_connections()
+        super().close_request(request)
+
+
+class ConnectionOverrideLiveServerThread(LiveServerThread):
+    server_class = ConnectionOverrideThreadedWSGIServer
+
+    def _create_server(self, connections_override=None):
+        connections_override = connections_override or self.connections_override
+        return self.server_class(
+            (self.host, self.port),
+            QuietWSGIRequestHandler,
+            allow_reuse_address=False,
+            connections_override=connections_override,
+        )
 
 
 class SelenosisTestCaseBase(type(LiveServerTestCase)):
@@ -102,6 +142,7 @@ class SelenosisTestCaseBase(type(LiveServerTestCase)):
 class SelenosisTestCase(LiveServerTestCase, metaclass=SelenosisTestCaseBase):
 
     skip_selenium_exception = False
+    server_thread_class = ConnectionOverrideLiveServerThread
 
     @classmethod
     def setUpClass(cls):
