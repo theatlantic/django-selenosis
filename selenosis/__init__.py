@@ -5,14 +5,10 @@
 #
 # without running afoul of the strict import order required by Django 1.9+.
 # This implementation is shamelessly stolen from werkzeug's ``__init__.py``.
-import pkg_resources
 import sys
 from types import ModuleType
 
-try:
-    __version__ = pkg_resources.get_distribution('django-selenosis').version
-except pkg_resources.DistributionNotFound:
-    __version__ = None
+__version__ = "2.0.5"
 
 # import mapping to objects in other modules
 all_by_module = {
