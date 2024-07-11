@@ -7,7 +7,31 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        grappelli: ["0", "1"]
+        python-version: ["3.11"]
+        django-version: ["4.2"]
+        exclude:
+          - python-version: "3.11"
+            grappelli: "1"
+        include:
+          - python-version: "3.8"
+            django-version: "4.2"
+            grappelli: "1"
+          - python-version: "3.9"
+            django-version: "5.0"
+            grappelli: "0"
+          - python-version: "3.10"
+            django-version: "5.0"
+            grappelli: "1"
+          - python-version: "3.12"
+            django-version: "5.1"
+            grappelli: "0"
+
+    name: Django ${{ matrix.django-version }} (Python ${{ matrix.python-version }})${{ matrix.grappelli == '1' && ' + grappelli' || '' }}
+
+    env:
+      DJANGO: ${{ matrix.django-version }}
+      GRAPPELLI: ${{ matrix.grappelli }}
 
     steps:
     - uses: actions/checkout@v3

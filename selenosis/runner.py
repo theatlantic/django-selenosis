@@ -35,16 +35,12 @@ class NoFailFastUnexpectedSuccessTestResultMixin:
     """Overridden test result class that doesn't failfast on unexpected success"""
 
     def addUnexpectedSuccess(self, test):
-        self.unexpectedSuccesses.append((test, 'Success'))
+        self.unexpectedSuccesses.append(test)
         if self.showAll:
             self.stream.writeln("unexpected success")
         elif self.dots:
             self.stream.write("u")
             self.stream.flush()
-
-    def printErrors(self):
-        super(NoFailFastUnexpectedSuccessTestResultMixin, self).printErrors()
-        self.printErrorList('UNEXPECTED SUCCESS', self.unexpectedSuccesses)
 
 
 class TextTestResult(NoFailFastUnexpectedSuccessTestResultMixin, unittest.TextTestResult):
@@ -55,10 +51,7 @@ class DebugSQLTextTestResult(
         NoFailFastUnexpectedSuccessTestResultMixin,
         django.test.runner.DebugSQLTextTestResult):
 
-    def addUnexpectedSuccess(self, test):
-        super(DebugSQLTextTestResult, self).addUnexpectedSuccess(test)
-        self.debug_sql_stream.seek(0)
-        self.unexpectedSuccesses[-1] += (self.debug_sql_stream.read(),)
+    pass
 
 
 class _FailedTest(unittest.TestCase):

@@ -1,7 +1,21 @@
 #!/usr/bin/env python
 from os import path
+import re
 
 from setuptools import setup, find_packages
+
+
+# Find the package version in __init__.py without importing it
+init_file = path.join(path.dirname(__file__), "selenosis", "__init__.py")
+with open(init_file) as f:
+    for line in f:
+        m = re.search(r"""^__version__ = (['"])(.+?)\1$""", line)
+        if m is not None:
+            version = m.group(2)
+            break
+    else:
+        raise LookupError("Unable to find __version__ in " + init_file)
+
 
 
 def read(*parts):
@@ -11,7 +25,7 @@ def read(*parts):
 
 setup(
     name='django-selenosis',
-    version='2.0.5',
+    version=version,
     license='BSD',
     description='Helpers for writing selenium tests for Django',
     long_description=read('README.rst'),

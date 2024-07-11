@@ -160,12 +160,19 @@ class SelenosisTestCase(LiveServerTestCase, metaclass=SelenosisTestCaseBase):
         cls.selenium = selenium
         cls.selenium.implicitly_wait(10)
         super(SelenosisTestCase, cls).setUpClass()
+        if hasattr(cls, "addClassCleanup"):
+            cls.addClassCleanup(cls._quit_selenium)
 
     @classmethod
-    def _tearDownClassInternal(cls):
+    def _quit_selenium(cls):
         # quit() the WebDriver before attempting to terminate and join the
         # single-threaded LiveServerThread to avoid a dead lock if the browser
         # kept a connection alive.
-        if hasattr(cls, 'selenium'):
+        if hasattr(cls, "selenium"):
             cls.selenium.quit()
+
+    @classmethod
+    def _tearDownClassInternal(cls):
+        if not hasattr(cls, "addClassCleanup"):
+            cls._quit_selenium()
         super(SelenosisTestCase, cls)._tearDownClassInternal()
