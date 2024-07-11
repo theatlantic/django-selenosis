@@ -27,6 +27,8 @@ jobs:
             django-version: "5.1"
             grappelli: "0"
 
+    name: Django ${{ matrix.django-version }} (Python ${{ matrix.python-version }})${{ matrix.grappelli == '1' && ' + grappelli' || '' }}
+
     env:
       DJANGO: ${{ matrix.django-version }}
       GRAPPELLI: ${{ matrix.grappelli }}
