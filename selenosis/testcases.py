@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.test.utils import override_settings
 
 from .selenium import SelenosisTestCaseBase, SelenosisTestCase
-from .utils import tag
+from .utils import tag, class_property
 
 
 class AdminSelenosisTestCaseBase(SelenosisTestCaseBase):
@@ -190,16 +190,16 @@ class AdminSelenosisTestCase(
     admin_site_name = 'admin'
     auto_login = True
 
-    @property
-    def has_grappelli(self):
+    @class_property
+    def has_grappelli(cls):
         return 'grappelli' in settings.INSTALLED_APPS
 
-    @property
-    def has_suit(self):
+    @class_property
+    def has_suit(cls):
         return 'suit' in settings.INSTALLED_APPS
 
-    @property
-    def available_apps(self):
+    @class_property
+    def available_apps(cls):
         apps = [
             'django.contrib.auth',
             'django.contrib.contenttypes',
@@ -210,10 +210,10 @@ class AdminSelenosisTestCase(
             'django.contrib.admin',
             'selenosis',
         ]
-        if self.has_grappelli:
+        if cls.has_grappelli:
             apps.insert(0, 'grappelli')
 
-        current_app = type(self).__module__.rpartition('.')[0]
+        current_app = cls.__module__.rpartition('.')[0]
 
         parent_app = re.split(r'\.tests(?:\.|$)', current_app)[0]
         if parent_app != current_app:
